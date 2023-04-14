@@ -32,16 +32,12 @@ $ . venv/bin/activate
 
 ### Nhận repo
 
-本リポジトリを取得します。
-
 ```
 (venv)$ git clone https://github.com/sky-joker/VMUG20220727.git
 (venv)$ cd VMUG20220727
 ```
 
-### 必要なライブラリなどをインストール
-
-以下のコマンドを実行して必要なライブラリやCollectionsをインストールします。
+### Cài gói yêu cầu
 
 ```
 pip install -r requirements.txt
