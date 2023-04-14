@@ -1,0 +1,84 @@
+
+---
+# - name: msg 
+#   debug:
+#     msg: "{{ vms }}"
+
+- name: Gather facts for vm summary
+  vmware_guest_info:
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    validate_certs: no
+    datacenter: DC
+    name: "{{ item.vm_name }}"
+  register: gather_facts_for_vm_summary_result
+  loop: "{{ target_vm_info }}"
+
+- name: Gather facts for vm each properties
+  vmware_guest_info:
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    validate_certs: no
+    datacenter: DC
+    name: "{{ item.vm_name }}"
+    schema: vsphere
+    properties:
+      - alarmActionsEnabled
+      - overallStatus
+      - config.name
+      - config.annotation
+      - config.flags
+      - config.managedBy
+      - guest.hostName
+      - guest.net
+      - summary.storage
+      - summary.quickStats
+      - summary.config
+      - summary.runtime
+      - config.memoryAllocation
+  register: gather_facts_for_vm_each_properties
+  loop: "{{ target_vm_info }}"
+
+- name: Set of combine data
+  set_fact:
+    data: >-
+      {{ data | default([])
+        + [item.instance | combine(combine_data.instance)]
+      }}
+  vars:
+    combine_data: >-
+      {{ gather_facts_for_vm_each_properties.results
+        | selectattr('instance.config.name','equalto',item['instance']['hw_name'])
+        | list
+        | first
+      }}
+  loop: "{{ gather_facts_for_vm_summary_result.results }}"
+  loop_control:
+    label: "{{ item.instance.hw_name }}"
+
+- name: Sending contents of a file in the email body
+  mail:
+    host: "{{ mail_host }}"
+    port: "{{ mail_port }}"
+    username: "{{ mail_username }}"
+    password: "{{ mail_password }}"
+    from: "{{ mail_username }}"
+    to: huydv@suncloud.vn
+    subject: Change log
+    body: "{{ lookup('template','templates/vmware_vm_inventory_report.j2') }}"
+    subtype: html
+  delegate_to: localhost
+
+# - name: Generate VM inventory report(html)
+#   template:
+#     src: templates/vmware_vm_inventory_report.j2
+#     dest: vmware_vm_inventory_report.html
+#   when: export_type == "html"
+
+# - name: Generate VM inventory report(csv)
+#   template:
+#     src: templates/vmware_vm_inventory_report_csv.j2
+#     dest: vmware_vm_inventory_report.csv
+#   when: export_type == "csv"

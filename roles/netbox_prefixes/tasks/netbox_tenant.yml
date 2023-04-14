@@ -17,4 +17,4 @@
       description: Gateway
     state: "{{ state | default('present') }}"
   vars:
-    __prefix: "{{ prefix | ansible.utils.ipaddr('prefix') }}"
+    __prefix: "{{ prefix | ansible.utils.ipaddr('prefix') }}" #Lấy ra số Prefix từ biến prefix

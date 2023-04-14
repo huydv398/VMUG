@@ -1,17 +1,16 @@
 ---
 - name: Make sure whether the tenant has the prefixes
-  ansible.builtin.set_fact:
+  ansible.builtin.set_fact: #Set fact tenant_prefixes
     tenant_prefixes: >-
       {{ query('netbox.netbox.nb_lookup',
                'prefixes',
                api_endpoint=netbox_url,
                token=netbox_token,
-               api_filter='tenant=%s' % (tenant_name)
+               api_filter="{ $tenant_name }"
          )
       }}
-
 - name: Set target_prefix variable
-  ansible.builtin.set_fact:
+  ansible.builtin.set_fact: #Set fact target_prefix
     target_prefix: "{{ item.value.prefix }}"
   loop: "{{ tenant_prefixes }}"
   when:
@@ -20,7 +19,7 @@
     - item.value.tenant.name == tenant_name
 
 - name: Make sure whether a valid prefix does exist in the tenant
-  ansible.builtin.assert:
+  ansible.builtin.assert: #Module dùng để thông báo khi không thành công
     that:
       - target_prefix is defined
     fail_msg: "Not found a valid prefix in the tenant."

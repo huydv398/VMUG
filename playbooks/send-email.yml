@@ -1,0 +1,6 @@
+---
+- name: send email
+  hosts: all
+  gather_facts: false
+  roles:
+    - alear_msg

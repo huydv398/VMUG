@@ -5,6 +5,7 @@
 - name: Include add_vm_folder tasks
   include_tasks: add_vm_folder.yml
 
+
 - name: Include deploy_vm_to_esxi tasks
   include_tasks: deploy_vm_to_esxi.yml
   when:

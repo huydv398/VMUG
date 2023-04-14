@@ -5,3 +5,5 @@
   roles:
     - netbox_activate_ip_addr
     - vmware_deploy_vm
+    - netbox_virtual_machines
+    - alear_msg

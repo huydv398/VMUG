@@ -1,0 +1,16 @@
+- name: Note vm to Netbox befor doloy_vm
+  block:
+    - name: Gather Cluster information
+      community.vmware.vmware_cluster_info:
+        hostname: "{{ vcenter_hostname | default(lookup('env', 'VMWARE_HOST')) }}"
+        username: "{{ vcenter_username | default(lookup('env', 'VMWARE_USER')) }}"
+        password: "{{ vcenter_password | default(lookup('env', 'VMWARE_PASSWORD')) }}"
+        validate_certs: "{{ validate_certs | default(false) }}"
+        datacenter: "{{ datacenter_name }}"
+      register: get_cluster_info_result
+
+    - name: If the cluster doesn't exist
+      fail:
+        msg: "{{ cluster_name }} not found."
+      when:
+        - "not cluster_name in get_cluster_info_result.clusters"

@@ -7,3 +7,4 @@
 
 - name: Include set_aap_jobtemplate_variable tasks
   ansible.builtin.include_tasks: set_aap_jobtemplate_variable.yml
+ 
